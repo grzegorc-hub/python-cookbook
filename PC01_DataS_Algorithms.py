@@ -193,3 +193,79 @@ print( a.items() & b.items() )
 
 c = { k: a[k] for k in a.keys() - {'z'} }
 print(c)
+
+
+# 1.10 REMOVING DUPLICATES WHILE KEEPING ORDER
+# ---------------------------------------------
+
+def del_duplicates(items, key=None):
+    seen = set()
+    for item in items:
+        val = item if key is None else key(item)
+        if val not in seen:
+            yield item
+            seen.add(val)
+
+
+a = [1, 5, 2, 1, 9, 1, 5, 10]
+print(list(del_duplicates(a)))
+
+b = [{'x': 1, 'y': 2}, {'x': 1, 'y': 3}, {'x': 1, 'y': 2}, {'x': 2, 'y': 4}]
+print(list(del_duplicates(b, key=lambda d: d['x'])))
+
+c = [1, 2, 3, 7, 4, 5, 1, 2, 3, 10]
+print(set(c))  # doesn't preserve order
+
+
+# NAMING A SLICE
+# --------------------------
+
+######   0123456789012345678901234567890123456789012345678901234567890'
+record = '....................100         .......513.25     ..........'
+cost = int(record[20:32]) * float(record[40:48])
+print(cost)
+
+SHARES = slice(20, 32)
+PRICE = slice(40, 48)
+cost = int(record[SHARES]) * float(record[PRICE])
+print(cost)
+
+print(PRICE.start, PRICE.stop, PRICE.step)
+
+
+# MOST FREQUENT ITEMS IN SEQ
+# --------------------------------
+
+words = [
+    'look', 'into', 'my', 'eyes', 'look', 'into', 'my', 'eyes',
+    'the', 'eyes', 'the', 'eyes', 'the', 'eyes', 'not', 'around', 'the',
+    'eyes', "don't", 'look', 'around', 'the', 'eyes', 'look', 'into',
+    'my', 'eyes', "you're", 'under'
+]
+
+from collections import Counter
+words_count = Counter(words)
+print(words_count.most_common(3))
+
+
+# 1.13 SORTING LIST OF DICTS BY COMMON KEY
+# ---------------------------------------------
+
+rows = [
+    {'fname': 'Brian', 'lname': 'Jones', 'uid': 1003},
+    {'fname': 'David', 'lname': 'Beazley', 'uid': 1002},
+    {'fname': 'John', 'lname': 'Cleese', 'uid': 1001},
+    {'fname': 'Big', 'lname': 'Jones', 'uid': 1004}
+]
+
+from operator import itemgetter
+
+rows_by_fname = sorted(rows, key=itemgetter('fname'))
+print(rows_by_fname)
+rows_by_lname = sorted(rows, key=itemgetter('lname'))
+print(rows_by_lname)
+
+rows_by_lname2 = sorted(rows, key=lambda r: r['lname'])
+print(rows_by_lname2)
+
+

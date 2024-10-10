@@ -269,3 +269,166 @@ rows_by_lname2 = sorted(rows, key=lambda r: r['lname'])
 print(rows_by_lname2)
 
 
+# 1.14 SORTING OBJECTS WITHOUT NATIVE CMP
+# ---------------------------------------------
+
+class User:
+    def __init__(self, user_id):
+        self.user_id = user_id
+
+    def __repr__(self):
+        return f'User({self.user_id})'
+
+
+users = [User(1), User(5), User(3)]
+print(users)
+
+users2 = sorted(users, key=lambda u: u.user_id)
+print(users2)
+
+from operator import attrgetter
+users3 = sorted(users, key=attrgetter('user_id'))
+print(users3)
+
+
+# 1.15 GROUPING RECORDS TOGETHER BASED ON A FIELD
+# ------------------------------------------------
+
+"""
+The groupby() function works by scanning a sequence and finding sequential “runs”
+of identical values (or values returned by the given key function). On each iteration, it
+returns the value along with an iterator that produces all of the items in a group with
+the same value.
+"""
+
+rows = [
+    {'address': '5412 N CLARK', 'date': '07/01/2012'},
+    {'address': '5148 N CLARK', 'date': '07/04/2012'},
+    {'address': '5800 E 58TH', 'date': '07/02/2012'},
+    {'address': '2122 N CLARK', 'date': '07/03/2012'},
+    {'address': '5645 N RAVENSWOOD', 'date': '07/02/2012'},
+    {'address': '1060 W ADDISON', 'date': '07/02/2012'},
+    {'address': '4801 N BROADWAY', 'date': '07/01/2012'},
+    {'address': '1039 W GRANVILLE', 'date': '07/04/2012'},
+]
+
+from operator import itemgetter
+from itertools import groupby
+
+rows.sort(key=itemgetter('date'))
+
+for date, items in groupby(rows, key=itemgetter('date')):
+    print(date)
+    for i in items:
+        print(i)
+
+
+# 1.16 FILTERING SEQUENCE ELEMENTS
+# --------------------------------
+
+mylist = [1, 4, -5, 10, -7, 2, 3, -1]
+
+print([n for n in mylist if n > 0])
+print([n for n in mylist if n < 0])
+
+pos = (n for n in mylist if n > 0)  # if the result is large, then better to use generator
+print(pos)
+for x in pos:
+    print(x)
+
+
+values = ['1', '2', '-3', '-', '4', 'N/A', '5']
+def is_int(val):
+    try:
+        x = int(val)
+        return True
+    except ValueError:
+        return False
+
+f = list(filter(is_int, values))  # for more advanced filtering criteria, use separate function and filter()
+print(f)
+
+
+# 1.17 EXTRACTING SUBSET OF DICT
+# -------------------------------
+
+prices = {
+    'ACME': 45.23,
+    'AAPL': 612.78,
+    'IBM': 205.55,
+    'HPQ': 37.20,
+    'FB': 10.75
+}
+
+p1 = {k:v for k,v in prices.items() if v > 200}
+print(p1)
+
+
+# 1.18 NAMED TUPLES
+# ------------------
+
+from collections import namedtuple
+
+Subscriber = namedtuple('Subscriber', ['addr', 'joined'])
+sub = Subscriber('bob@example.com', '2019-01-01')
+
+print(sub)
+print(sub.addr)
+a, b = sub
+print(b)
+
+
+# ordinary tuple
+def compute_cost1(records):
+    total = 0.0
+    for rec in records:
+        total += rec[1] * rec[2]
+    return total
+
+# namedtuple
+Stock = namedtuple('Stock', ['name', 'shares', 'price'])
+def compute_cost2(records):
+    total = 0.0
+    for rec in records:
+        s = Stock(*rec)
+        total += s.shares * s.price
+    return total
+
+
+# 1.19 TRANSFORMING AND REDUCING DATA AT THE SAME TIME
+# -----------------------------------------------------
+
+nums = [1, 2, 3, 4, 5]
+s = sum(x * x for x in nums)
+print(s)
+
+import os
+
+files = os.listdir('.')
+if any(name.endswith('.py') for name in files):
+    print('there is python')
+else:
+    print('no python')
+
+portfolio = [
+    {'name': 'GOOG', 'shares': 50},
+    {'name': 'YHOO', 'shares': 75},
+    {'name': 'AOL', 'shares': 20}]
+min_shares = min(s['shares'] for s in portfolio)
+print(min_shares)
+
+
+# 1.20 COMBINING MULTIPLE MAPPINGS INTO A SINGLE MAPPING
+# ------------------------------------------------------
+# You have multiple dictionaries or mappings that you want to logically combine into a
+# single mapping to perform certain operations, such as looking up values or checking
+# for the existence of keys.
+
+a = {'x': 1, 'z': 3 }
+b = {'y': 2, 'z': 4 }
+
+from collections import ChainMap
+c = ChainMap(a, b)
+print(c['x'])
+print(c['y'])
+print(c['z'])
